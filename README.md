@@ -11,10 +11,15 @@ a new knowledge graph from the publicly available real-world Medical Information
 in healthcare domain. 
 
 ### Install instructions:
-- Dependencies: Python 3.6, PyTorch 1.4.0 w/ CUDA 9.2,  
+- Dependencies: Python 3.6, PyTorch 1.4.0 w/ CUDA 9.2, Pytorch Geometric
+- The specific Pytorch Geometric wheels we use are included in the repo for convenience in the 'wheels' directory
 ```shell
 conda create -n slice python=3.6
 pip install torch==1.4.0+cu92 torchvision==0.5.0+cu92 -f https://download.pytorch.org/whl/torch_stable.html
+pip install wheels/torch_cluster-1.5.4-cp36-cp36m-linux_x86_64.whl
+pip install wheels/torch_scatter-2.0.4-cp36-cp36m-linux_x86_64.whl
+pip install wheels/torch_sparse-0.6.1-cp36-cp36m-linux_x86_64.whl
+pip install wheels/torch_spline_conv-1.2.0-cp36-cp36m-linux_x86_64.whl
 conda install --name slice --file spec_file.txt
 pip install -r requirements.txt
 ```
