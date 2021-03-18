@@ -26,7 +26,7 @@ pip install -r requirements.txt
 
 ### Training:
 ```shell
-python main_gcn_wkfl3.py \
+python main.py \
     --data_name $dataset \
     --data_path $data_path \
     --outdir $outdir \
