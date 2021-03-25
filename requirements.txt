@@ -93,12 +93,12 @@ tabulate==0.8.7
 text-unidecode==1.3
 threadpoolctl==2.1.0
 toml==0.10.2
-torch==1.4.0+cu92
-torch-cluster @ file:///people/hamc649/WHLs/torch_cluster-1.5.4-cp36-cp36m-linux_x86_64.whl
-torch-scatter @ file:///people/hamc649/WHLs/torch_scatter-2.0.4-cp36-cp36m-linux_x86_64.whl
-torch-sparse @ file:///people/hamc649/WHLs/torch_sparse-0.6.1-cp36-cp36m-linux_x86_64.whl
-torch-spline-conv @ file:///people/hamc649/WHLs/torch_spline_conv-1.2.0-cp36-cp36m-linux_x86_64.whl
-torchvision==0.5.0+cu92
+torch==1.4.0
+torch-cluster==1.5.4
+torch-scatter==2.0.4
+torch-sparse==0.6.1
+torch-spline-conv==1.2.0
+torchvision==0.5.0
 tqdm==4.56.2
 typed-ast==1.4.1
 typing-extensions==3.7.4.3
