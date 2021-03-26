@@ -1,7 +1,7 @@
 import torch
 from torch.autograd import Variable
 
-from src.wide_deep_model.InputEncoder import NodeEncoder
+from src.wide_deep_model.input_encoder import NodeEncoder
 
 
 def get_norm_id(id_map, some_id):
