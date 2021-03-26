@@ -7,12 +7,12 @@ from typing import List
 import numpy as np
 from gensim.models import Word2Vec
 
-from finetuning import (
+from src.finetuning import (
     run_finetuning_wkfl2,
     run_finetuning_wkfl3,
     setup_finetuning_input,
 )
-from pretraining import run_pretraining, setup_pretraining_input
+from src.pretraining import run_pretraining, setup_pretraining_input
 from src.node2vec.src.node2vec import Graph
 from src.processing.context_generator import ContextGenerator
 from src.processing.generic_attributed_graph import GenericGraph
