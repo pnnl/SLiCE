@@ -14,7 +14,7 @@ from torch.autograd import Variable
 from src.bert_model.bert_model import GraphBERT, FinetuneLayer
 from src.bert_model.process_walks_gcn import Processing_GCN_Walks
 from src.utils.context_metrics import PathMetrics
-from src.utils.data_utils import CreateFinetuneBatches2
+from src.utils.data_utils import create_finetune_batches2
 from src.utils.utils import load_pickle, show_progress
 
 
@@ -55,7 +55,7 @@ def setup_finetuning_input(args, attr_graph, context_gen):
             len(valid_edges),
             len(test_edges),
         )
-    num_batches = CreateFinetuneBatches2(
+    num_batches = create_finetune_batches2(
         finetune_walks_per_task, finetune_path, args.data_name, args.ft_batch_size
     )
     print("No. of batches for finetuning:", num_batches)
@@ -74,7 +74,7 @@ def run_finetuning_wkfl2(
     try:
         shutil.rmtree(ft_out_dir)
         os.mkdir(ft_out_dir)
-    except:
+    except:  # FIXME - need to replace bare except
         os.mkdir(ft_out_dir)
     relations = attr_graph.relation_to_id
     nodeid2rowid = attr_graph.get_nodeid2rowid()
@@ -219,7 +219,7 @@ def run_finetuning_wkfl3(
     try:
         shutil.rmtree(ft_out_dir)
         os.mkdir(ft_out_dir)
-    except:
+    except:  # FIXME - need to replace bare except
         os.mkdir(ft_out_dir)
     relations = attr_graph.relation_to_id
     nodeid2rowid = attr_graph.get_nodeid2rowid()

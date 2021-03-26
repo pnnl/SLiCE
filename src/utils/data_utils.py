@@ -79,7 +79,7 @@ def create_batches(data_list, data_path, data_name, task, batch_size):
         return cnt
 
 
-def CreateFinetuneBatches(finetune_path, data_name, batch_size):
+def create_finetune_batches(finetune_path, data_name, batch_size):
     no_batches = {}
     tasks = ["train", "valid", "test"]
     # finetune_path = os.path.join(data_path)
@@ -106,7 +106,7 @@ def CreateFinetuneBatches(finetune_path, data_name, batch_size):
     return no_batches
 
 
-def CreateFinetuneBatches2(finetune_data, finetune_path, data_name, batch_size):
+def create_finetune_batches2(finetune_data, finetune_path, data_name, batch_size):
     """
     receives a dictionary of all test and valid, cases .
     each subgraph is a list of edegs, where first edge contains (test source,
