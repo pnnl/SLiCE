@@ -306,7 +306,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Default values
-    args.pretrained_embeddings, args.base_embedding_dim = get_set_embeddings_details(args)
+    args.pretrained_embeddings, args.base_embedding_dim = \
+        get_set_embeddings_details(args)
     args.d_model = args.base_embedding_dim
     args.d_ff = args.base_embedding_dim * 4
 
