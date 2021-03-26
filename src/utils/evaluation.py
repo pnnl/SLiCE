@@ -13,9 +13,7 @@ from sklearn.metrics import (
 
 
 def run_evaluation(pred_data, true_data):
-    """
-    For evaluation.
-    """
+    """For evaluation."""
     pred_data = np.array(pred_data)
     true_data = np.array(true_data)
 
@@ -39,9 +37,7 @@ def run_evaluation(pred_data, true_data):
 
 
 def run_evaluation_graph(pred_data, true_data, test_edges, attr_graph):
-    """
-    For evaluation.
-    """
+    """For evaluation."""
     pred_data = np.array(pred_data)
     true_data = np.array(true_data)
 
@@ -59,8 +55,7 @@ def run_evaluation_graph(pred_data, true_data, test_edges, attr_graph):
     print("true \n", len(true_seq))  # , true_seq)
     # print(true_seq)
     # print(test_edges[0][0])
-    for ii in range(len(test_edges)):
-        subgraph = test_edges[ii]
+    for ii, subgraph in enumerate(test_edges):
         test_edge = subgraph[0]
         # print(test_edge)
         test_relation = test_edge[1]
@@ -102,7 +97,7 @@ def run_evaluation_main(test_edges, prediction_data, true_data, threshold, heade
     # threshold = sorted_pred[-true_num]
     y_pred = np.zeros(len(prediction_data), dtype=np.int32)
 
-    for i in range(len(prediction_data)):
+    for i, _ in enumerate(prediction_data):
         if prediction_data[i] >= threshold:
             y_pred[i] = 1
 
@@ -112,10 +107,12 @@ def run_evaluation_main(test_edges, prediction_data, true_data, threshold, heade
 
     print("----------------------In run_evaluation_main()------------")
     print(
-        f"y_true.shape: {y_true.shape}, y_scores.shape: {y_scores.shape}, y_pred.shape: {y_pred.shape}"
+        f"y_true.shape: {y_true.shape}, y_scores.shape: {y_scores.shape}"
+        f", y_pred.shape: {y_pred.shape}"
     )
     print(
-        f"{header} : ROC-AUC: {roc_auc_score(y_true, y_scores)}, F1: {f1_score(y_true, y_pred)}, AUC: {auc(rs,ps)}"
+        f"{header} : ROC-AUC: {roc_auc_score(y_true, y_scores)},"
+        f" F1: {f1_score(y_true, y_pred)}, AUC: {auc(rs,ps)}"
     )
 
     print("\nEvaluation by edge type: ")
@@ -123,7 +120,7 @@ def run_evaluation_main(test_edges, prediction_data, true_data, threshold, heade
     y_true_dict = {}
     y_score_dict = {}
     # print(len(prediction_data), len(true_data), len(test_edges))
-    for ii in range(len(test_edges)):
+    for ii, _ in enumerate(test_edges):
         edge_type = test_edges[ii][0]
         try:
             y_pred_dict[edge_type].append(y_pred[ii])
@@ -141,11 +138,16 @@ def run_evaluation_main(test_edges, prediction_data, true_data, threshold, heade
         y_score_dict[itm] = np.array(y_score_dict[itm])
         ps, rs, _ = precision_recall_curve(y_true_dict[itm], y_score_dict[itm])
         print(
-            f"y_true.shape: {y_true_dict[itm].shape}, y_scores.shape: {y_score_dict[itm].shape}, y_pred.shape: {y_pred_dict[itm].shape}"
+            f"y_true.shape: {y_true_dict[itm].shape},"
+            f" y_scores.shape: {y_score_dict[itm].shape},"
+            f" y_pred.shape: {y_pred_dict[itm].shape}"
         )
         try:
             print(
-                f"{header} : ROC-AUC: {roc_auc_score(y_true_dict[itm], y_score_dict[itm])}, F1: {f1_score(y_true_dict[itm], y_pred_dict[itm])}, AUC: {auc(rs,ps)}"
+                f"{header} : ROC-AUC: "
+                f"{roc_auc_score(y_true_dict[itm], y_score_dict[itm])},"
+                f" F1: {f1_score(y_true_dict[itm], y_pred_dict[itm])},"
+                f" AUC: {auc(rs,ps)}"
             )
         except KeyError:
             pass

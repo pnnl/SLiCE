@@ -62,9 +62,9 @@ def get_node_embeddings(path: str):
     size_embedding = 0
     line_count = 0
     with open(path, "r") as f:
-        for l in f:
+        for line in f:
             line_count += 1
-            tokens = l.strip().split(" ")
+            tokens = line.strip().split(" ")
             if header:
                 num_nodes = int(tokens[0])
                 size_embedding = int(tokens[1])
@@ -81,9 +81,9 @@ def get_node_embeddings(path: str):
     return node_embeddings
 
 
-def get_node_vals(l: str, data_format: str):
+def get_node_vals(line: str, data_format: str):
     label = None
-    tokens = l.strip().split(" ")
+    tokens = line.strip().split(" ")
     etype = tokens[0]
     node1 = tokens[1]
     node2 = tokens[2]
@@ -98,8 +98,8 @@ def get_test_edges(paths: List[str]):
     edges = set()
     for path in paths:
         with open(path, "r") as f:
-            for l in f:
-                etype, source, destination, label = get_node_vals(l, "test")
+            for line in f:
+                etype, source, destination, label = get_node_vals(line, "test")
                 edge = (etype, source, destination, label)
                 edges.add(edge)
     print(f"Num test edges: {len(edges)}")
@@ -196,7 +196,7 @@ def test_link_prediction(
     # threshold2 = sorted_pred[-true_num]
 
     y_pred = np.zeros(len(prediction_list), dtype=np.int32)
-    for i in range(len(prediction_list)):
+    for i, _ in enumerate(prediction_list):
         if prediction_list[i] >= threshold:
             y_pred[i] = 1
 
@@ -225,9 +225,9 @@ def avg_poly_embeddings(poly_embeddings):
     avg_poly_embeddings = np.ndarray((num_samples, embedding_size))
     for n in range(num_samples):
         emb_item = poly_embeddings[n]
-        avg_emb_item = np.average(emb_item, axis=0)
-        min_emb_item = np.amin(emb_item, axis=0)
-        max_emb_item = np.amax(emb_item, axis=0)
+        # avg_emb_item = np.average(emb_item, axis=0)
+        # min_emb_item = np.amin(emb_item, axis=0)
+        # max_emb_item = np.amax(emb_item, axis=0)
         sum_emb_item = np.sum(emb_item, axis=0)
         avg_poly_embeddings[n] = sum_emb_item
     print()

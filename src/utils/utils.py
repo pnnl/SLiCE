@@ -15,9 +15,7 @@ def load_pickle(filename):
 
 
 def show_progress(curr_, total_, message=""):
-    """
-    Display progress
-    """
+    """Display progress."""
     prog_ = int(round(100.0 * float(curr_) / float(total_)))
     dstr = "[" + ">" * int(round(prog_ / 4)) + " " * (25 - int(round(prog_ / 4))) + "]"
     sys.stdout.write("{}{}% {}\r".format(dstr, prog_, message))
@@ -31,38 +29,16 @@ class EarlyStopping:
         self.counter = 0
         self.lowest_loss = None
 
-    def check_early_stopping(val_loss):
-        if self.lowest_loss == None:
+    def check_early_stopping(self, val_loss):
+        if self.lowest_loss is None:
             self.lowest_loss = val_loss
             return False
 
         if val_loss + self.delta <= self.lowest_loss:
             self.counter += 1
-            if self.counter >= patience:
+            if self.counter >= self.patience:
                 # stop model
                 return True
-        return False
-
-
-def check_early_stopping(valid_loss_epochs, patience, delta=0.001):
-    """
-    if validation loss has been static for last 'patience' epochs, return True
-    => stop training
-    else:
-        returns False
-    """
-    if len(valid_loss_epochs) < patience:
-        return False
-    loss_last_k_epochs = valid_loss_epochs[-patience:]
-    average_change_epochs = [
-        loss[iter + 1] - loss[iter] for iter in range(len(valid_loss_epochs) - 1)
-    ]
-
-    average_loss = sum(average_change_epochs) / len(average_change_epochs)
-    print("print average loss over last 'k' epochs", average_loss, patience)
-    if average_loss <= delta:
-        return True
-    else:
         return False
 
 
