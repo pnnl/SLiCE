@@ -142,7 +142,7 @@ def get_scores(node_embeddings: dict, test_edges, poly: bool = False, facets: in
     return scores
 
 
-def Find_Optimal_Cutoff(target, predicted):
+def find_optimal_cutoff(target, predicted):
     fpr, tpr, threshold = roc_curve(target, predicted)
     i = np.arange(len(tpr))
     roc = pd.DataFrame(
@@ -191,7 +191,7 @@ def test_link_prediction(
     sorted_pred.sort()
 
     y_true = np.array(true_list)
-    threshold = Find_Optimal_Cutoff(y_true, prediction_list)[0]
+    threshold = find_optimal_cutoff(y_true, prediction_list)[0]
     # This was the original threshold approximator
     # threshold2 = sorted_pred[-true_num]
 
@@ -266,7 +266,7 @@ def link_prediction_eval(
             pred_data[data_type].append(score)
 
     valid_true_data = np.array(true_data["valid"])
-    threshold = Find_Optimal_Cutoff(valid_true_data, pred_data["valid"])[0]
+    threshold = find_optimal_cutoff(valid_true_data, pred_data["valid"])[0]
     run_evaluation_main(
         test_edges, pred_data["test"], true_data["test"], threshold, header="workflow1"
     )

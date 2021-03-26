@@ -18,14 +18,17 @@ from src.processing.context_generator import ContextGenerator
 from src.processing.generic_attributed_graph import GenericGraph
 from src.utils.data_utils import load_pretrained_node2vec
 from src.utils.evaluation import run_evaluation_main
-from src.utils.link_predict import Find_Optimal_Cutoff, link_prediction_eval
+from src.utils.link_predict import find_optimal_cutoff, link_prediction_eval
 from src.utils.utils import get_id_map, load_pickle
 
 
 def get_set_embeddings_details(args):
     if not args.pretrained_embeddings:
         if args.pretrained_method == "compgcn":
-            args.pretrained_embeddings = f"{args.emb_dir}/{args.data_name}/act_{args.data_name}_{args.node_edge_composition_func}_500.out"
+            args.pretrained_embeddings = (
+                f"{args.emb_dir}/{args.data_name}/"
+                f"act_{args.data_name}_{args.node_edge_composition_func}_500.out"
+            )
         elif args.pretrained_method == "node2vec":
             args.base_embedding_dim = 128
             args.pretrained_embeddings = (
@@ -142,7 +145,7 @@ def main(args):
     )
     print("\n Begin evaluation for link prediction...")
     valid_true_data = np.array(true_data["valid"])
-    threshold = Find_Optimal_Cutoff(valid_true_data, pred_data["valid"])[0]
+    threshold = find_optimal_cutoff(valid_true_data, pred_data["valid"])[0]
     run_evaluation_main(
         test_edges, pred_data["test"], true_data["test"], threshold, header="workflow2"
     )
@@ -162,7 +165,7 @@ def main(args):
     )
     print("\n Begin evaluation for link prediction...")
     valid_true_data = np.array(true_data_valid)
-    threshold = Find_Optimal_Cutoff(valid_true_data, pred_data_valid)[0]
+    threshold = find_optimal_cutoff(valid_true_data, pred_data_valid)[0]
     # save the threshold values for later use
     json.dump(threshold, open(args.outdir + "/thresholds.json", "w"))
     run_evaluation_main(
@@ -306,8 +309,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Default values
-    args.pretrained_embeddings, args.base_embedding_dim = \
-        get_set_embeddings_details(args)
+    args.pretrained_embeddings, args.base_embedding_dim = get_set_embeddings_details(
+        args
+    )
     args.d_model = args.base_embedding_dim
     args.d_ff = args.base_embedding_dim * 4
 
