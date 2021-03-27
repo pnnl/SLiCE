@@ -1,36 +1,16 @@
-#!/usr/bin/python
-
-import json
 import pickle
 import random
-from collections import defaultdict
 
 import networkx as nx
 import numpy as np
-import pandas as pd
 
 from src.processing.negative_sampling import NegativeSampleGenerator
-
-
-class Node:
-    """
-    Not used right now, may be used if node attributes become a complicated
-    data structure
-    """
-
-    def __init__(self, id, label, attrs=dict()):
-        self.id = id
-        self.label = label
-        self.attrs = attrs
-
-    def add_attr(self, attr_label, attr_value):
-        self.attrs[attr_label] = attr_value
 
 
 class AttributedGraph:
     def __init__(self):
         """
-        Base class for all graph loaders. 
+        Base class for all graph loaders.
         Assumes derived classes will create a networkx graph object of type
         1) nx.Graph() or nx.DiGraph()
         2) A node id to row id (0 to n-1) dictionary
@@ -48,6 +28,11 @@ class AttributedGraph:
         self.train_edges = list()
         self.valid_edges = list()
         self.test_edges = list()
+        self.relation_to_id = dict()
+        self.id_to_relation = dict()
+        self.nodeid2rowid = dict()
+        self.rowid2nodeid = dict()
+        self.rowid2vocabid = dict()
 
     def load_graph(self, edgefile, node_attr_file=None):
         """
@@ -78,27 +63,27 @@ class AttributedGraph:
 
     def dump_graph(self, outdir, fr_valid_edges, fr_test_edges):
         print("Saving  graph at ", outdir)
-        self.generate_link_prediction_dataset(outdir, fr_valid_edges,
-                                              fr_test_edges)
+        self.generate_link_prediction_dataset(outdir, fr_valid_edges, fr_test_edges)
         try:
             with open(outdir + "/normalized.txt", "w") as f:
                 for u, v in self.G.edges():
-                    relation = self.G.edges[u, v]['label']
-                    #f.write(str(self.normalized_node_id_map[u]) + " " + str(self.normalized_node_id_map[v]) + " " + relation + "\n")
+                    relation = self.G.edges[u, v]["label"]
+                    # f.write(str(self.normalized_node_id_map[u]) +
+                    # " " + str(self.normalized_node_id_map[v]) + " " + relation + "\n")
                     f.write(f"{u}\t{v} {relation}\n")
         except IOError:
             print("Unable to write normalized graph at ", outdir)
 
         print("Saving test train validation set for link prediction")
-        with open(outdir + "/train.txt", 'w') as f:
+        with open(outdir + "/train.txt", "w") as f:
             for edge in self.train_edges:
                 f.write(f"{edge[0]} {edge[1]} {edge[2]} {edge[3]}\n")
 
-        with open(outdir + "/valid.txt", 'w') as f:
+        with open(outdir + "/valid.txt", "w") as f:
             for edge in self.valid_edges:
                 f.write(f"{edge[0]} {edge[1]} {edge[2]} {edge[3]}\n")
 
-        with open(outdir + "/test.txt", 'w') as f:
+        with open(outdir + "/test.txt", "w") as f:
             for edge in self.test_edges:
                 f.write(f"{edge[0]} {edge[1]} {edge[2]} {edge[3]}\n")
         return
@@ -122,9 +107,9 @@ class AttributedGraph:
     #    return self.node_attrs[node_id]
 
     def get_edge_attr(self, u, v):
-        return G.edges[u, v]['label']
+        return self.G.edges[u, v]["label"]
 
-    def get_edges(self, node_id=[]):
+    def get_edges(self, node_id):  # FIXME, removed dangerous list init
         if len(node_id) == 0:
             return self.G.edges.data()
         else:
@@ -153,8 +138,7 @@ class AttributedGraph:
             else:
                 return self.node_attr_dfs[node_type].loc[node_id]
         except KeyError:
-            print("Could not find this node attribute", node_id,
-                  attribute_label)
+            print("Could not find this node attribute", node_id, attribute_label)
             return None
 
     def get_random_non_edges(self, cnt):
@@ -162,7 +146,7 @@ class AttributedGraph:
         nodes = list(self.G.nodes())
         relations = self.unique_relations
         print("Generating false edges", cnt)
-        for i in range(cnt):
+        for _ in range(cnt):
             pair = random.sample(nodes, 2)
             u = pair[0]
             v = pair[1]
@@ -170,24 +154,25 @@ class AttributedGraph:
                 result.append((random.sample(relations, 1)[0], u, v, "0"))
 
         return result
-    
+
     def generate_link_prediction_dataset(self, outdir, fr_valid_edges, fr_test_edges):
         print("In Default AttributedGraph LinkPrediction generation")
-        false_edge_gen = self.false_edge_gen
+        false_edge_gen = self.false_edge_gen  #FIXME - this isn't defined
         all_positive_edges = self.map_positive_edges()
         num_edges = self.G.number_of_edges()
         num_test_edges = int(num_edges * fr_test_edges)
         num_valid_edges = int(num_edges * fr_valid_edges)
         num_train_edges = num_edges - (num_valid_edges + num_test_edges)
         self.train_edges = all_positive_edges[0:num_train_edges]
-        self.valid_edges = \
-        all_positive_edges[num_train_edges:num_train_edges+num_valid_edges]
-        self.test_edges = all_positive_edges[num_train_edges+num_valid_edges:]
-        if(false_edge_gen == 'pattern'):
+        self.valid_edges = all_positive_edges[
+            num_train_edges : num_train_edges + num_valid_edges
+        ]
+        self.test_edges = all_positive_edges[num_train_edges + num_valid_edges :]
+        if false_edge_gen == "pattern":
             self.train_edges = self.generate_false_edges3(self.train_edges)
             self.valid_edges = self.generate_false_edges3(self.valid_edges)
             self.test_edges = self.generate_false_edges3(self.test_edges)
-        elif(false_edge_gen == 'double'):
+        elif false_edge_gen == "double":
             self.train_edges = self.generate_false_edges2(self.train_edges)
             self.valid_edges = self.generate_false_edges2(self.valid_edges)
             self.test_edges = self.generate_false_edges2(self.test_edges)
@@ -196,17 +181,16 @@ class AttributedGraph:
             self.valid_edges = self.generate_false_edges(self.valid_edges)
             self.test_edges = self.generate_false_edges(self.test_edges)
 
-        self.valid_edges, self.test_edges = self.remove_coldstart_valid_test(self.train_edges, 
-                                                                             self.valid_edges,
-                                                                             self.test_edges)
+        self.valid_edges, self.test_edges = self.remove_coldstart_valid_test(
+            self.train_edges, self.valid_edges, self.test_edges
+        )
         # print('Dump link prediction edges ...')
         # self.dump_edges(outdir+ "/train.txt", self.train_edges)
         # self.dump_edges(outdir+ "/valid.txt", self.valid_edges)
         # self.dump_edges(outdir+ "/test.txt", self.test_edges)
         return self.train_edges, self.valid_edges, self.test_edges
 
-    def remove_coldstart_valid_test(self, train_edges, valid_edges,
-                                    test_edges):
+    def remove_coldstart_valid_test(self, train_edges, valid_edges, test_edges):
         nodes_in_training_set = []
         for r, u, v, _ in train_edges:
             nodes_in_training_set.append(u)
@@ -214,14 +198,12 @@ class AttributedGraph:
 
         cleaned_valid_edges = []
         for r, u, v, label in valid_edges:
-            if(u in nodes_in_training_set and
-               v in nodes_in_training_set):
+            if u in nodes_in_training_set and v in nodes_in_training_set:
                 cleaned_valid_edges.append((r, u, v, label))
 
         cleaned_test_edges = []
         for r, u, v, label in test_edges:
-            if(u in nodes_in_training_set and
-               v in nodes_in_training_set):
+            if u in nodes_in_training_set and v in nodes_in_training_set:
                 cleaned_test_edges.append((r, u, v, label))
         return cleaned_valid_edges, cleaned_test_edges
 
@@ -244,19 +226,18 @@ class AttributedGraph:
                 node_type_to_ids[node_type] = [node_id]
 
         false_edges = set()
-        while(len(false_edges) < count):
+        while len(false_edges) < count:
             for relation, source, target, _ in positive_edge_list:
                 target_type = self.node_types[target]
-                false_target = random.sample(node_type_to_ids[target_type],1)[0]
-                all_source_nbrs = list(set(list(nx.all_neighbors(self.G,
-                                                             source))))
+                false_target = random.sample(node_type_to_ids[target_type], 1)[0]
+                all_source_nbrs = list(set(list(nx.all_neighbors(self.G, source))))
                 if false_target not in all_source_nbrs:
                     if len(false_edges) < count:
                         false_edges.add((relation, source, false_target, "0"))
                     else:
                         break
 
-        final_edges = list(set(positive_edge_list+list(false_edges)))
+        final_edges = list(set(positive_edge_list + list(false_edges)))
         random.shuffle(final_edges)
         return final_edges
 
@@ -286,8 +267,7 @@ class AttributedGraph:
             # (source, relation, target) in positive_edge_list
             target_type = self.node_types[target]
             false_target = random.sample(node_type_to_ids[target_type], 1)[0]
-            all_source_nbrs = list(set(list(nx.all_neighbors(self.G,
-                                                             source))))
+            all_source_nbrs = list(set(list(nx.all_neighbors(self.G, source))))
             if false_target not in all_source_nbrs:
                 false_edges.append((relation, source, false_target, "0"))
 
@@ -295,8 +275,7 @@ class AttributedGraph:
             # (source, relation, target) in positive_edge_list
             source_type = self.node_types[source]
             false_source = random.sample(node_type_to_ids[source_type], 1)[0]
-            all_target_nbrs = list(set(list(nx.all_neighbors(self.G,
-                                                             target))))
+            all_target_nbrs = list(set(list(nx.all_neighbors(self.G, target))))
             if false_source not in all_target_nbrs:
                 false_edges.append((relation, false_source, target, "0"))
 
@@ -306,29 +285,32 @@ class AttributedGraph:
         print(len(final_edges))
         return final_edges
 
-    def generate_false_edges3(self, positive_edge_list, num_false_count_per_true_edge=5):
-        #generate negative edges of
-        #num_false_count_per_true_edge*len(self.G.edges()) for graph object
-        #1) find valid edge types for each node
-        #2) group nodes that have same set of valid edges to determine node types
-        #3) for each node type pair
+    def generate_false_edges3(
+        self, positive_edge_list, num_false_count_per_true_edge=5
+    ):
+        # generate negative edges of
+        # num_false_count_per_true_edge*len(self.G.edges()) for graph object
+        # 1) find valid edge types for each node
+        # 2) group nodes that have same set of valid edges to determine node types
+        # 3) for each node type pair
         #    (relation[i],u', v', "0"), here u'.type -> v'.type does not exist in self.G
         #    relation[i] = self.unique_relations[i]
-        #returns : random.shuffle(true_edges + false_edges)
+        # returns : random.shuffle(true_edges + false_edges)
         # get {node -> set(valid edge types)}
-        
-        generator = NegativeSampleGenerator()
-        false_edges = generator.gen_negative_triples(self.G,
-                                                     len(positive_edge_list)*num_false_count_per_true_edge)
 
-        final_edges = list(positive_edge_list+false_edges)
+        generator = NegativeSampleGenerator()
+        false_edges = generator.gen_negative_triples(
+            self.G, len(positive_edge_list) * num_false_count_per_true_edge
+        )
+
+        final_edges = list(positive_edge_list + false_edges)
         random.shuffle(final_edges)
         return final_edges
-    
+
     def map_positive_edges(self):
         mappped_edge_list_by_type = []
         for u, v in self.G.edges():
-            relation = self.G.edges[u, v]['label']
+            relation = self.G.edges[u, v]["label"]
             mappped_edge_list_by_type.append((relation, u, v, "1"))
         return mappped_edge_list_by_type
 
@@ -355,9 +337,9 @@ class AttributedGraph:
             df = self.node_attr_dfs[node_type]
             node_set = df.index.tolist()
             node2row = {}
-            for i in range(len(node_set)):
+            for i, _ in enumerate(node_set):
                 node2row[node_set[i]] = i
-            #print('\n nodeid2rowid: \n', node2row)
+            # print('\n nodeid2rowid: \n', node2row)
             self.nodeid2rowid[node_type] = node2row
 
         return self.nodeid2rowid
@@ -394,9 +376,7 @@ class AttributedGraph:
             return -1
 
     def get_graph_node_id(self, node_type_with_row_id):
-        """
-        take the string containing nodetype_noderowid
-        """
+        """take the string containing nodetype_noderowid."""
         arr = node_type_with_row_id.split("_")
         node_type = arr[0]
         row_id = arr[1]
@@ -405,8 +385,7 @@ class AttributedGraph:
 
     def set_relation_id(self):
         relations = list(self.unique_relations)
-        self.relation_to_id = {relations[ii]: ii for ii in
-                               range(len(relations))}
+        self.relation_to_id = {relations[ii]: ii for ii in range(len(relations))}
         self.id_to_relation = {v: k for k, v in self.relation_to_id.items()}
 
     def get_relation_id(self, relation):
@@ -422,7 +401,7 @@ class AttributedGraph:
         except KeyError:
             print("Could not find relation", relation_id)
             return -1
-    
+
     def dump_graph_transformer_networks_dataset(self, dump_dir):
         # Dump features pkl
         #   DBLP: len=334 int32 numpy ndarray per node
@@ -430,7 +409,7 @@ class AttributedGraph:
         #   IMDB: len=1256 float32 numpy ndarray per node
         no_features = True
         node_features = []
-        for i in range(self.get_number_of_nodes()):
+        for _ in range(self.get_number_of_nodes()):
             # Currently we don't have features so I am just dumping an empty tensor
             if no_features:
                 node_feature = np.zeros(shape=(100,))
@@ -438,9 +417,8 @@ class AttributedGraph:
                 pass
             node_features.append(node_feature)
         node_features_path = f"{dump_dir}/node_features.pkl"
-        with open(node_features_path, 'wb') as f:
+        with open(node_features_path, "wb") as f:
             pickle.dump(node_features, f)
-        
 
         # Dump edges pkl
         #   All datasets from GTN have 4 relationship types
