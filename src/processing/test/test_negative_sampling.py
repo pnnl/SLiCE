@@ -1,6 +1,6 @@
 import unittest
 
-from negative_sampling import NegativeSampleGenerator
+from src.processing.negative_sampling import NegativeSampleGenerator
 
 
 class TestNegativeSampleGenerator(unittest.TestCase):
