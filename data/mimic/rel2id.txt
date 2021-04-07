@@ -1,0 +1,1 @@
+{"has_visit": 0, "diagnosed_with": 1, "treated_by": 2, "prescribed_with": 3}
