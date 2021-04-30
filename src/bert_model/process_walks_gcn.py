@@ -93,7 +93,7 @@ class Processing_GCN_Walks:
                     nodes.append(int(target_node))
             all_nodes.append(nodes)
 
-        # special_tokens = self.getSpecialTokens()
+        special_tokens = self.getSpecialTokens()
         all_nodes, masked_nodes, masked_postion = self.masking_and_padding(all_nodes)
         # print('\n subgraphs \n', subgraphs)
         # print('\n all_nodes \n', all_nodes)
@@ -152,7 +152,7 @@ class Processing_GCN_Walks:
                     nodes.append(target_node)
             all_nodes.append(nodes)
 
-        # special_tokens = self.getSpecialTokens()
+        special_tokens = self.getSpecialTokens()
         all_nodes = self.pad_max_seq_len(all_nodes, self.max_length + 1)
         # print("created rowid subgraphs for batch", subgraphs_list, subgraph_len)
         labels = Variable(torch.FloatTensor(labels)).unsqueeze(1)
