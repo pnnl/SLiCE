@@ -11,8 +11,8 @@ import torch.nn
 import torch.optim as optim
 from torch.autograd import Variable
 
-from src.bert_model.bert_model import GraphBERT, FinetuneLayer
-from src.bert_model.process_walks_gcn import Processing_GCN_Walks
+from src.slice_model.slice_model import SLICE, FinetuneLayer
+from src.slice_model.process_walks_gcn import Processing_GCN_Walks
 from src.utils.context_metrics import PathMetrics
 from src.utils.data_utils import create_finetune_batches2
 from src.utils.utils import load_pickle, show_progress
@@ -112,7 +112,8 @@ def run_finetuning_wkfl2(
     else:
         pretrained_node_embedding_tensor = None
 
-    graph_bert = GraphBERT(
+    # FIXME
+    slice = SLICE(
         int(args.n_layers),
         int(args.d_model),
         args.d_k,
@@ -145,15 +146,15 @@ def run_finetuning_wkfl2(
     else:
         fl_ = os.path.join(outdir, "bert_{}.model".format(epoch))
     print("LOADING PRE_TRAIN model from ", fl_)
-    graph_bert.load_state_dict(
+    slice.load_state_dict(
         torch.load(fl_, map_location=lambda storage, loc: storage)
     )
 
     # run in fine tuning mode
-    graph_bert.set_fine_tuning()
+    slice.set_fine_tuning()
     # testing
     print("Begin Testing")
-    graph_bert.eval()
+    slice.eval()
 
     pred_data = {}
     true_data = {}
@@ -182,7 +183,7 @@ def run_finetuning_wkfl2(
                 masked_nodes = Variable(
                     torch.LongTensor([[] for ii in range(args.ft_batch_size)])
                 )
-                output, _, _ = graph_bert(
+                output, _, _ = slice(
                     subgraphs, all_nodes, masked_pos, masked_nodes
                 )
                 source_embed = output[:, 0, :].unsqueeze(1)
@@ -257,7 +258,8 @@ def run_finetuning_wkfl3(
     else:
         pretrained_node_embedding_tensor = None
 
-    graph_bert = GraphBERT(
+    # FIXME
+    slice = SLICE(
         int(args.n_layers),
         int(args.d_model),
         args.d_k,
@@ -277,7 +279,7 @@ def run_finetuning_wkfl3(
         rel2id,
     )
 
-    pretrained_node_embedding_tensor = graph_bert.gcn_graph_encoder.node_embedding
+    pretrained_node_embedding_tensor = slice.gcn_graph_encoder.node_embedding
 
     ft_linear = FinetuneLayer(
         args.d_model,
@@ -302,12 +304,12 @@ def run_finetuning_wkfl3(
     fbest.close()
     fl_ = os.path.join(outdir, "bert_{}.model".format(best_epoch))
     print("LOADING PRE_TRAIN model from ", fl_)
-    graph_bert.load_state_dict(
+    slice.load_state_dict(
         torch.load(fl_, map_location=lambda storage, loc: storage)
     )
 
     # run in fine tuning mode
-    graph_bert.set_fine_tuning()
+    slice.set_fine_tuning()
 
     print("\n Begin Training")
     loss_dev_final = []
@@ -328,7 +330,7 @@ def run_finetuning_wkfl3(
                 masked_nodes = Variable(
                     torch.LongTensor([[] for ii in range(args.ft_batch_size)])
                 )
-                _, layer_output, _ = graph_bert(
+                _, layer_output, _ = slice(
                     subgraphs, all_nodes, masked_pos, masked_nodes
                 )
             pred_scores, _, _ = ft_linear(layer_output)
@@ -366,7 +368,7 @@ def run_finetuning_wkfl3(
                 )
 
                 # validation
-                graph_bert.eval()
+                slice.eval()
                 ft_linear.eval()
                 pred_data_valid = []
                 true_data_valid = []
@@ -382,7 +384,7 @@ def run_finetuning_wkfl3(
                         masked_nodes = Variable(
                             torch.LongTensor([[] for ii in range(args.ft_batch_size)])
                         )
-                        _, layer_output, _ = graph_bert(
+                        _, layer_output, _ = slice(
                             subgraphs, all_nodes, masked_pos, masked_nodes
                         )
                         pred_scores, _, _ = ft_linear(layer_output)
@@ -415,7 +417,7 @@ def run_finetuning_wkfl3(
                         torch.save(ft_linear.state_dict(), fmodel)
                         fmodel.close()
 
-                graph_bert.train()
+                slice.train()
                 ft_linear.train()
         loss_dev_final.append(loss_dev_min)
         print("MinLoss: ", np.around(loss_dev_min, 4))
@@ -428,7 +430,7 @@ def run_finetuning_wkfl3(
     np.save("finetuning_loss.npy", loss_dev_final)
     # testing
     print("Begin Testing")
-    graph_bert.eval()
+    slice.eval()
     ft_linear.eval()
 
     fl_ = os.path.join(ft_out_dir, "finetune_{}.model".format(best_epoch))
@@ -473,7 +475,7 @@ def run_finetuning_wkfl3(
             masked_nodes = Variable(
                 torch.LongTensor([[] for ii in range(args.ft_batch_size)])
             )
-            _, layer_output, att_output = graph_bert(
+            _, layer_output, att_output = slice(
                 subgraphs, all_nodes, masked_pos, masked_nodes
             )
             score, src_embedding, dst_embedding = ft_linear(layer_output)

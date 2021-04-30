@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import networkx as nx
-from src.bert_model.bert_model import FinetuneLayer
+from src.slice_model.slice_model import FinetuneLayer
 
 
 class PathMetrics:
@@ -246,7 +246,7 @@ class PathMetrics:
         # emb_dist_1 = get_cosine_dist_by_static_emb(source, target)
         # # Distance betweeen source and target - based off GraphBERT embeddings
         # emb_dist_2 = get_cosine_dist_by_dynamic_emb(source, target)
-        # emb_shift_from_graph_bert = emb_dist_2 - emb_dist_1
+        # emb_shift_from_slice = emb_dist_2 - emb_dist_1
 
         # # Looking at divergence from static CompGCN embedding and the dynamically
         # # generated Graph-BERT embedding
@@ -255,7 +255,7 @@ class PathMetrics:
 
         # coh_mean = np.mean(path_coherence_list)
         # coh_std = np.std(path_coherence_list)
-        # return num_paths, num_metapaths, emb_shift_from_graph_bert, coh_mean, coh_std, \
+        # return num_paths, num_metapaths, emb_shift_from_slice, coh_mean, coh_std, \
         #         counts_by_metapath, coh_summary_by_metapath
 
         # Mahantesh - Sutanay - Ping - Pin-Yu - Baichuan

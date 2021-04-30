@@ -9,8 +9,8 @@ import torch
 import torch.nn
 import torch.optim as optim
 
-from src.bert_model.bert_model import GraphBERT
-from src.bert_model.process_walks_gcn import (
+from src.slice_model.slice_model import SLICE
+from src.slice_model.process_walks_gcn import (
     Processing_GCN_Walks,
     get_normalized_masked_ids,
 )
@@ -131,7 +131,7 @@ def run_pretraining(
     else:
         pretrained_node_embedding_tensor = None
 
-    graph_bert = GraphBERT(
+    slice = SLICE(
         int(args.n_layers),
         int(args.d_model),
         args.d_k,
@@ -152,10 +152,10 @@ def run_pretraining(
     )
 
     # if torch.cuda.is_available():
-    #    graph_bert =  torch.nn.DataParallel(graph_bert, device_ids=[0,1])
+    #    slice =  torch.nn.DataParallel(slice, device_ids=[0,1])
 
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = optim.Adam(graph_bert.parameters(), args.lr)
+    optimizer = optim.Adam(slice.parameters(), args.lr)
     node_embeddings = dict()
 
     loss_dev_final = []
@@ -177,12 +177,12 @@ def run_pretraining(
             )
 
             if args.get_bert_encoder_embeddings:
-                logits_lm, _ = graph_bert(
+                logits_lm, _ = slice(
                     subgraphs_list, all_nodes, masked_postion, masked_nodes
                 )
                 # node_embeddings[subgraphs_list] = bert_subgraph_embedding_output
             else:
-                logits_lm = graph_bert(
+                logits_lm = slice(
                     subgraphs_list, all_nodes, masked_postion, masked_nodes
                 )
             # print('check ====', logits_lm.size(), masked_nodes_id.size())
@@ -226,7 +226,7 @@ def run_pretraining(
                 )
 
                 # validation
-                graph_bert.eval()
+                slice.eval()
 
                 with torch.no_grad():
                     loss_dev_arr = []
@@ -239,12 +239,12 @@ def run_pretraining(
                         ) = batch_input["validate"][batch_dev_id]
 
                         if args.get_bert_encoder_embeddings:
-                            logits_lm, _ = graph_bert(
+                            logits_lm, _ = slice(
                                 subgraphs_list, all_nodes, masked_postion, masked_nodes
                             )
                             # node_embeddings[subgraphs_list] = bert_subgraph_embedding_output
                         else:
-                            logits_lm = graph_bert(
+                            logits_lm = slice(
                                 subgraphs_list, all_nodes, masked_postion, masked_nodes
                             )
 
@@ -272,10 +272,10 @@ def run_pretraining(
                     fmodel = open(
                         os.path.join(out_dir, "bert_" + str(epoch) + ".model"), "wb"
                     )
-                    torch.save(graph_bert.state_dict(), fmodel)
+                    torch.save(slice.state_dict(), fmodel)
                     fmodel.close()
 
-                graph_bert.train()
+                slice.train()
                 # if(earlystopping.check_early_stopping(loss_dev_avg) == True):
                 #    print("Loss not decreasing over 3 epochs exiting")
                 #    epoch = args.n_epochs + 1
@@ -294,9 +294,9 @@ def run_pretraining(
     np.save("pretraining_loss.npy", loss_dev_final)
 
     print("Begin Testing")
-    graph_bert.eval()
+    slice.eval()
     fl_ = os.path.join(out_dir, "bert_{}.model".format(best_epoch))
-    graph_bert.load_state_dict(
+    slice.load_state_dict(
         torch.load(fl_, map_location=lambda storage, loc: storage)
     )
 
@@ -309,14 +309,14 @@ def run_pretraining(
             ][batch_dev_id]
 
             if args.get_bert_encoder_embeddings:
-                logits, bert_subgraph_embedding_output = graph_bert(
+                logits, bert_subgraph_embedding_output = slice(
                     subgraphs_list, all_nodes, masked_postion, masked_nodes
                 )
                 for i, _ in enumerate(subgraphs_list):
                     str_subgraph = get_str_subgraph(subgraphs_list[i])
                     node_embeddings[str_subgraph] = bert_subgraph_embedding_output[i]
             else:
-                logits = graph_bert(
+                logits = slice(
                     subgraphs_list, all_nodes, masked_postion, masked_nodes
                 )
             prob = torch.softmax(logits, dim=2)
@@ -339,7 +339,7 @@ def run_pretraining(
     # #Dump node vectors
     # if args.get_node_embedding == False:
     #     print('\n Begin dumping node embeddings ...')
-    #     node_embedding = graph_bert.GetNodeVec()
+    #     node_embedding = slice.GetNodeVec()
     #     node_embedding_file = os.path.join(data_path, args.data_name+'_node_embedding.pickled')
     #     pickle.dump(node_embedding, open(node_embedding_file, "wb" ))
 

@@ -5,8 +5,8 @@ import torch
 
 from torch.autograd import Variable
 
-from src.wide_deep_model.gcn_graph_encoder import GCNGraphEncoder
-from src.wide_deep_model.gcn_transform import GCNTransform
+from src.encoding.gcn_graph_encoder import GCNGraphEncoder
+from src.encoding.gcn_transform import GCNTransform
 
 
 def get_attn_pad_mask(seq_q, seq_k, pad_id):
@@ -116,7 +116,7 @@ class EncoderLayer(torch.nn.Module):
         return enc_outputs, attn
 
 
-class GraphBERT(torch.nn.Module):
+class SLICE(torch.nn.Module):
     def __init__(
         self,
         n_layers,
