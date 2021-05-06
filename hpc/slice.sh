@@ -26,11 +26,11 @@ echo "script_name_during_run: "${script_name_during_run}
 # script parameters
 
 home_dir=$HOME
-repo_dir="{$home_dir}/SLiCE"
+repo_dir="${home_dir}/SLiCE"
 data_name='amazon_s'
-data_path="{$repo_dir}/data"
-outdir="{$repo_dir}/output/{$data_name}"
-pretrained_embeddings="{$repo_dir}/data/{$data_name}/{$data_name}.emd"
+data_path="${repo_dir}/data"
+outdir="${repo_dir}/output/${data_name}"
+pretrained_embeddings="${repo_dir}/data/${data_name}/${data_name}.emd"
 n_epochs=2
 n_layers=2
 n_heads=2
@@ -42,8 +42,8 @@ ft_input_option="last4_cat"
 path_option="random"
 walk_type="dfs"
 
-echo "home_dir: "${home_dir}
-echo "repo_dir: "${repo_dir}
+echo "home_dir: "$home_dir
+echo "repo_dir: "$repo_dir
 echo "data_name: "$data_name
 echo "data_path: "$data_path
 echo "outdir: "$outdir
