@@ -110,7 +110,7 @@ def main(args):
         )
 
     print(
-        "No. of nodes with pretrained embedding from CompGCN: ",
+        "No. of nodes with pretrained embedding: ",
         len(pretrained_node_embedding),
     )
 
@@ -123,10 +123,12 @@ def main(args):
     print("No. edges in test data: ", len(test_edges))
 
     if args.is_pre_trained:
-        print("No pretrained embedding, no need to evaluate workflow 1.\n")
         link_prediction_eval(
             valid_edges, test_edges, ent2id, rel2id, pretrained_node_embedding
         )
+    else:
+        print("No pretrained embedding, no need to evaluate workflow 1.\n")
+
 
     print("***************PRETRAINING***************")
     pre_num_batches = setup_pretraining_input(args, attr_graph, context_gen, data_path)
@@ -250,8 +252,7 @@ if __name__ == "__main__":
     # GCN Layer options
     parser.add_argument(
         "--is_pre_trained",
-        default=True,
-        type=bool,
+        action='store_true'
         help="if there is pretrained node embeddings",
     )
     parser.add_argument(
