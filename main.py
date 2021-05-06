@@ -252,7 +252,7 @@ if __name__ == "__main__":
     # GCN Layer options
     parser.add_argument(
         "--is_pre_trained",
-        action='store_true'
+        action='store_true',
         help="if there is pretrained node embeddings",
     )
     parser.add_argument(
