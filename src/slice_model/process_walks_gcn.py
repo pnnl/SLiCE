@@ -4,7 +4,7 @@ import os
 import torch
 from torch.autograd import Variable
 
-from src.bert_model.mask_generation import GenerateGraphMask
+from src.slice_model.mask_generation import GenerateGraphMask
 
 
 def get_normalized_masked_ids(masked_node_ids, ent2id):
