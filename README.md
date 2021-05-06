@@ -40,7 +40,7 @@ python main.py \
     --num_walks_per_node $n_walks_per_node \
     --max_length $max_length \
     --walk_type $walk_type \
-    --is_pre_trained $is_pretrain
+    --is_pre_trained
 ```
 
 ### Citation:
