@@ -59,6 +59,8 @@ echo "ft_input_option: "$ft_input_option
 echo "path_option: "$path_option
 echo "walk_type: "$walk_type
 
+cd $repo_dir
+
 python main.py \
     --data_name $data_name \
     --data_path $data_path \
