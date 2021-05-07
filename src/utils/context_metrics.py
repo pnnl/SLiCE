@@ -156,7 +156,7 @@ class PathMetrics:
             target_vec = self.pretrained_node_embedding[target_id]
             source_vec = source_vec.unsqueeze(0).unsqueeze(0)
             target_vec = target_vec.unsqueeze(0).unsqueeze(0).transpose(1, 2)
-        except KeyError:  # FIXME - replaced bare except
+        except (KeyError, TypeError) as e:  # FIXME - replaced bare except
             source_vec = self.pretrained_node_embedding(source_id).unsqueeze(0)
             target_vec = self.pretrained_node_embedding(target_id).unsqueeze(0)
             target_vec = target_vec.transpose(1, 2)
