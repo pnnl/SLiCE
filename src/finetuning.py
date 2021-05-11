@@ -424,7 +424,7 @@ def run_finetuning_wkfl3(
     best_epoch = np.argsort(loss_dev_final)[0]
     print("\nBest Epoch: {}".format(best_epoch))
 
-    np.save("finetuning_loss.npy", loss_dev_final)
+    np.save(f"{args.outdir}/finetuning_loss.npy", loss_dev_final)
     # testing
     print("Begin Testing")
     slice.eval()

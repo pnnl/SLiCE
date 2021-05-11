@@ -288,7 +288,7 @@ def run_pretraining(
     fbest = open(os.path.join(out_dir, "best_epoch_id.txt"), "w")
     fbest.write(str(best_epoch) + "\n")
     fbest.close()
-    np.save("pretraining_loss.npy", loss_dev_final)
+    np.save(f"{args.outdir}/pretraining_loss.npy", loss_dev_final)
 
     print("Begin Testing")
     slice.eval()
