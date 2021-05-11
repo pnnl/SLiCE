@@ -50,7 +50,7 @@ def setup_pretraining_input(args, attr_graph, context_gen, data_path):
             data_path,
             args.data_name,
             args.beam_width,
-            int(args.max_length),
+            args.max_length,
             args.walk_type,
         )
         print("\n split data to train/validate/test and save the files ...")
@@ -94,7 +94,7 @@ def run_pretraining(
     nodeid2rowid = attr_graph.get_nodeid2rowid()
     #no_nodes = attr_graph.get_number_of_nodes()
     walk_processor = Processing_GCN_Walks(
-        nodeid2rowid, relations, args.n_pred, int(args.max_length), args.max_pred
+        nodeid2rowid, relations, args.n_pred, args.max_length, args.max_pred
     )
 
     print("\n processing walks in minibaches before running model:")
@@ -132,17 +132,17 @@ def run_pretraining(
         pretrained_node_embedding_tensor = None
 
     slice = SLICE(
-        int(args.n_layers),
-        int(args.d_model),
+        args.n_layers,
+        args.d_model,
         args.d_k,
         args.d_v,
         args.d_ff,
-        int(args.n_heads),
+        args.n_heads,
         attr_graph,
         pretrained_node_embedding_tensor,
         args.is_pre_trained,
         args.base_embedding_dim,
-        int(args.max_length),
+        args.max_length,
         args.num_gcn_layers,
         args.node_edge_composition_func,
         args.gcn_option,
@@ -160,11 +160,10 @@ def run_pretraining(
 
     loss_dev_final = []
     print("\n Begin Training")
-    for epoch in range(int(args.n_epochs)):
+    for epoch in range(args.n_epochs):
         loss_arr = []
         loss_dev_min = 1e6
-        print()
-        print("Epoch: {}".format(epoch))
+        print("\nEpoch: {}".format(epoch))
         start_time = time.time()
         for batch_id in range(no_batches["train"]):
             (
@@ -216,9 +215,8 @@ def run_pretraining(
             if (
                 batch_id % args.checkpoint == 0 and batch_id > 0
             ) or batch_id == no_batches["train"] - 1:
-                print()
                 print(
-                    "Batch: {}, Loss: {}, AvgLoss: {}".format(
+                    "\nBatch: {}, Loss: {}, AvgLoss: {}".format(
                         batch_id,
                         np.around(loss.data.cpu().numpy().tolist(), 4),
                         np.around(np.average(loss_arr).tolist(), 4),
@@ -285,9 +283,8 @@ def run_pretraining(
         end_time = time.time()
         print("epoch time: (s)", (end_time - start_time))
 
-    print()
     best_epoch = np.argsort(loss_dev_final)[0]
-    print("Best Epoch: {}".format(best_epoch))
+    print("\nBest Epoch: {}".format(best_epoch))
     fbest = open(os.path.join(out_dir, "best_epoch_id.txt"), "w")
     fbest.write(str(best_epoch) + "\n")
     fbest.close()

@@ -29,7 +29,7 @@ class Processing_GCN_Walks:
         self.nodeid2rowid = nodeid2rowid
         self.relations = relations
         self.n_pred = n_pred
-        self.max_length = int(max_length)
+        self.max_length = max_length
         self.max_pred = max_pred
         self.special_tokens = {}
 

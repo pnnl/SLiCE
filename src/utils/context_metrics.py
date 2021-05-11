@@ -26,7 +26,7 @@ class PathMetrics:
         self.G = G
         self.ent2id = ent2id
         self.ft_input_option = ft_input_option
-        self.n_layers = int(n_layers)
+        self.n_layers = n_layers
         self.ft_linear = FinetuneLayer(
             d_model,
             ft_d_ff,

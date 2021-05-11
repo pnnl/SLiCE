@@ -45,7 +45,7 @@ def get_set_embeddings_details(args):
 def get_graph(data_path, false_edge_gen):
     print("\n Loading graph...")
     attr_graph = GenericGraph(data_path, false_edge_gen)
-    context_gen = ContextGenerator(attr_graph, int(args.num_walks_per_node))
+    context_gen = ContextGenerator(attr_graph, args.num_walks_per_node)
 
     return attr_graph, context_gen
 
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     )
     # Walks options
     parser.add_argument(
-        "--beam_width", default=4, help="beam width used for generating random walks"
+        "--beam_width", default=4, type=int, help="beam width used for generating random walks"
     )
     parser.add_argument(
         "--num_walks_per_node", default=1, type=int, help="walks per node"

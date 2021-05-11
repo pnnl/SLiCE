@@ -289,7 +289,7 @@ class FinetuneLayer(torch.nn.Module):
         self.d_model = d_model
         self.ft_layer = ft_layer
         self.ft_input_option = ft_input_option
-        self.n_layers = int(n_layers)
+        self.n_layers = n_layers
 
         if ft_input_option in ["last", "last4_sum"]:
             cnt_layers = 1

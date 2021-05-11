@@ -41,8 +41,8 @@ def setup_finetuning_input(args, attr_graph, context_gen):
             train_edges,
             valid_edges,
             test_edges,
-            int(args.beam_width),
-            int(args.max_length),
+            args.beam_width,
+            args.max_length,
             args.path_option,
         )
         json.dump(
@@ -79,7 +79,7 @@ def run_finetuning_wkfl2(
     relations = attr_graph.relation_to_id
     nodeid2rowid = attr_graph.get_nodeid2rowid()
     walk_processor = Processing_GCN_Walks(
-        nodeid2rowid, relations, args.n_pred, int(args.max_length), args.max_pred
+        nodeid2rowid, relations, args.n_pred, args.max_length, args.max_pred
     )
 
     # process minibatch for finetune(ft)
@@ -114,17 +114,17 @@ def run_finetuning_wkfl2(
 
     # FIXME
     slice = SLICE(
-        int(args.n_layers),
-        int(args.d_model),
+        args.n_layers,
+        args.d_model,
         args.d_k,
         args.d_v,
         args.d_ff,
-        int(args.n_heads),
+        args.n_heads,
         attr_graph,
         pretrained_node_embedding_tensor,
         args.is_pre_trained,
         args.base_embedding_dim,
-        int(args.max_length),
+        args.max_length,
         args.num_gcn_layers,
         args.node_edge_composition_func,
         args.gcn_option,
@@ -225,7 +225,7 @@ def run_finetuning_wkfl3(
     relations = attr_graph.relation_to_id
     nodeid2rowid = attr_graph.get_nodeid2rowid()
     walk_processor = Processing_GCN_Walks(
-        nodeid2rowid, relations, args.n_pred, int(args.max_length), args.max_pred
+        nodeid2rowid, relations, args.n_pred, args.max_length, args.max_pred
     )
 
     # process minibatch for finetune(ft)
@@ -260,17 +260,17 @@ def run_finetuning_wkfl3(
 
     # FIXME
     slice = SLICE(
-        int(args.n_layers),
-        int(args.d_model),
+        args.n_layers,
+        args.d_model,
         args.d_k,
         args.d_v,
         args.d_ff,
-        int(args.n_heads),
+        args.n_heads,
         attr_graph,
         pretrained_node_embedding_tensor,
         args.is_pre_trained,
         args.base_embedding_dim,
-        int(args.max_length),
+        args.max_length,
         args.num_gcn_layers,
         args.node_edge_composition_func,
         args.gcn_option,
@@ -313,11 +313,10 @@ def run_finetuning_wkfl3(
 
     print("\n Begin Training")
     loss_dev_final = []
-    for epoch in range(int(args.ft_n_epochs)):
+    for epoch in range(args.ft_n_epochs):
         loss_arr = []
         loss_dev_min = 1e6
-        print()
-        print("Finetune epoch: ", epoch)
+        print("\nFinetune epoch: ", epoch)
         start_time = time.time()
         for batch_id in range(no_batches["train"]):
             subgraphs, all_nodes, labels = walk_processor.process_finetune_minibatch(
@@ -342,25 +341,24 @@ def run_finetuning_wkfl3(
             optimizer.step()
             loss_arr.append(loss.data.cpu().numpy().tolist())
 
-            ccnt = batch_id % int(args.ft_checkpoint)
-            if batch_id > 0 and batch_id % int(args.ft_checkpoint) == 0:
-                ccnt = int(args.ft_checkpoint)
+            ccnt = batch_id % args.ft_checkpoint
+            if batch_id > 0 and batch_id % args.ft_checkpoint == 0:
+                ccnt = args.ft_checkpoint
             message = "Loss: {}, AvgLoss: {}{}".format(
                 np.around(loss.data.cpu().numpy().tolist(), 4),
                 np.around(np.average(loss_arr).tolist(), 4),
                 " " * 10,
             )
             show_progress(
-                ccnt, min(int(args.ft_checkpoint), no_batches["train"]), message
+                ccnt, min(args.ft_checkpoint, no_batches["train"]), message
             )
 
             if (
-                batch_id % int(args.ft_checkpoint) == 0 and batch_id > 0
+                batch_id % args.ft_checkpoint == 0 and batch_id > 0
             ) or batch_id == no_batches["train"] - 1:
 
-                print()
                 print(
-                    "Batch: {}, Loss: {}, AvgLoss: {}".format(
+                    "\nBatch: {}, Loss: {}, AvgLoss: {}".format(
                         batch_id,
                         np.around(loss.data.cpu().numpy().tolist(), 4),
                         np.around(np.average(loss_arr).tolist(), 4),
@@ -423,9 +421,8 @@ def run_finetuning_wkfl3(
         print("MinLoss: ", np.around(loss_dev_min, 4))
         end_time = time.time()
         print("epoch time: (s)", (end_time - start_time))
-    print()
     best_epoch = np.argsort(loss_dev_final)[0]
-    print("Best Epoch: {}".format(best_epoch))
+    print("\nBest Epoch: {}".format(best_epoch))
 
     np.save("finetuning_loss.npy", loss_dev_final)
     # testing
