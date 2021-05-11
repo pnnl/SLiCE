@@ -183,10 +183,10 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_name", default="amazon", help="name of the dataset")
-    parser.add_argument("--data_path", default="data_kdd20", help="path to dataset")
-    parser.add_argument("--outdir", default="test_out/", help="path to output dir")
-    parser.add_argument("--pretrained_embeddings")
+    parser.add_argument("--data_name", default="amazon_s", help="name of the dataset")
+    parser.add_argument("--data_path", default="data", help="path to dataset")
+    parser.add_argument("--outdir", default="output/default", help="path to output dir")
+    parser.add_argument("--pretrained_embeddings", help='absolute path to pretrained embeddings')
     parser.add_argument(
         "--pretrained_method", default="node2vec", help="compgcn|node2vec"
     )
