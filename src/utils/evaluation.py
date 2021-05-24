@@ -110,11 +110,16 @@ def run_evaluation_main(test_edges, prediction_data, true_data, threshold, heade
         f"y_true.shape: {y_true.shape}, y_scores.shape: {y_scores.shape}"
         f", y_pred.shape: {y_pred.shape}"
     )
+    try:
+        roc_auc = roc_auc_score(y_true, y_scores)
+    except ValueError:
+        roc_auc = 'UNDEFINED'
+    f1 = f1_score(y_true, y_pred)
+    auc_value = auc(rs,ps)
     print(
-        f"{header} : ROC-AUC: {roc_auc_score(y_true, y_scores)},"
-        f" F1: {f1_score(y_true, y_pred)}, AUC: {auc(rs,ps)}"
+        f"{header} : ROC-AUC: {roc_auc},"
+        f" F1: {f1}, AUC: {auc_value}"
     )
-
     print("\nEvaluation by edge type: ")
     y_pred_dict = {}
     y_true_dict = {}
@@ -143,12 +148,15 @@ def run_evaluation_main(test_edges, prediction_data, true_data, threshold, heade
             f" y_pred.shape: {y_pred_dict[itm].shape}"
         )
         try:
-            print(
+            roc_auc = roc_auc_score(y_true_dict[itm], y_score_dict[itm])
+        except (KeyError, ValueError):
+            roc_auc = 'UNDEFINED'
+        f1 = f1_score(y_true_dict[itm], y_pred_dict[itm])
+        auc_value = auc(rs,ps)
+        print(
                 f"{header} : ROC-AUC: "
-                f"{roc_auc_score(y_true_dict[itm], y_score_dict[itm])},"
-                f" F1: {f1_score(y_true_dict[itm], y_pred_dict[itm])},"
-                f" AUC: {auc(rs,ps)}"
+                f"{roc_auc},"
+                f" F1: {f1},"
+                f" AUC: {auc_value}"
             )
-        except KeyError:
-            pass
     print("END")
