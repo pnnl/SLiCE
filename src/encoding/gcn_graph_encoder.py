@@ -169,8 +169,8 @@ class GCNGraphEncoder(torch.nn.Module):
                 try:
                     tmp = Variable(torch.LongTensor([int(self.rel2id[relation_id])]))
                 except KeyError:  # FIXME - replaced bare except
-                    tmp = Variable(torch.LongTensor([int(relation_id)]))
-                # tmp = Variable(torch.LongTensor([int(relation_id)-1]))
+                    tmp = Variable(torch.LongTensor([int(relation_id) - 1]))
+
                 relation_emb[ii][norm_relation_id] = self.relation_embed(tmp)
 
         # get embeddings for special tokens
