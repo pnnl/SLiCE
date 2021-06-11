@@ -8,3 +8,8 @@ __pycache__/
 *batch*.txt
 output/
 hpc/logs/
+
+*_walks*
+*.pickled
+*.emd
+
