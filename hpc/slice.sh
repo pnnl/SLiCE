@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-#SBATCH --job-name=slice
+#SBATCH --job-name=slice-twitter
 #SBATCH --output=logs/%x-%j.out
 #SBATCH -A ST_GRAPHS
 #SBATCH -p dl
@@ -27,10 +27,19 @@ echo "script_name_during_run: "${script_name_during_run}
 
 home_dir=$HOME
 repo_dir="${home_dir}/SLiCE"
-data_name='amazon_s'
+
+# For non-cyber
+data_name='twitter'
 data_path="${repo_dir}/data"
 outdir="${repo_dir}/output/${data_name}"
 pretrained_embeddings="${repo_dir}/data/${data_name}/${data_name}.emd"
+
+# For cyber
+# data_name='cyber_17'
+# data_path="${repo_dir}/data/cyber/processed"
+# outdir="${repo_dir}/output/${data_name}"
+# pretrained_embeddings="${data_path}/${data_name}/${data_name}.emd"
+
 n_epochs=2
 n_layers=2
 n_heads=2
