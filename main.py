@@ -129,7 +129,6 @@ def main(args):
     else:
         print("No pretrained embedding, no need to evaluate workflow 1.\n")
 
-
     print("***************PRETRAINING***************")
     pre_num_batches = setup_pretraining_input(args, attr_graph, context_gen, data_path)
     print("\n Run model for pre-training ...")

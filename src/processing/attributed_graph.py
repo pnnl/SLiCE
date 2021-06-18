@@ -157,7 +157,7 @@ class AttributedGraph:
 
     def generate_link_prediction_dataset(self, outdir, fr_valid_edges, fr_test_edges):
         print("In Default AttributedGraph LinkPrediction generation")
-        false_edge_gen = self.false_edge_gen  #FIXME - this isn't defined
+        false_edge_gen = self.false_edge_gen
         all_positive_edges = self.map_positive_edges()
         num_edges = self.G.number_of_edges()
         num_test_edges = int(num_edges * fr_test_edges)

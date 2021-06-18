@@ -112,7 +112,6 @@ def run_finetuning_wkfl2(
     else:
         pretrained_node_embedding_tensor = None
 
-    # FIXME
     slice = SLICE(
         args.n_layers,
         args.d_model,
@@ -258,7 +257,6 @@ def run_finetuning_wkfl3(
     else:
         pretrained_node_embedding_tensor = None
 
-    # FIXME
     slice = SLICE(
         args.n_layers,
         args.d_model,
