@@ -185,13 +185,18 @@ if __name__ == "__main__":
     parser.add_argument("--data_name", default="amazon_s", help="name of the dataset")
     parser.add_argument("--data_path", default="data", help="path to dataset")
     parser.add_argument("--outdir", default="output/default", help="path to output dir")
-    parser.add_argument("--pretrained_embeddings", help='absolute path to pretrained embeddings')
+    parser.add_argument(
+        "--pretrained_embeddings", help="absolute path to pretrained embeddings"
+    )
     parser.add_argument(
         "--pretrained_method", default="node2vec", help="compgcn|node2vec"
     )
     # Walks options
     parser.add_argument(
-        "--beam_width", default=4, type=int, help="beam width used for generating random walks"
+        "--beam_width",
+        default=4,
+        type=int,
+        help="beam width used for generating random walks",
     )
     parser.add_argument(
         "--num_walks_per_node", default=1, type=int, help="walks per node"
@@ -207,7 +212,7 @@ if __name__ == "__main__":
     # Pretraining options
     parser.add_argument("--lr", default=0.0001, type=float, help="learning rate")
     parser.add_argument(
-        "--n_epochs", default=20, type=int, help="number of epochs for training"
+        "--n_epochs", default=10, type=int, help="number of epochs for training"
     )
     parser.add_argument(
         "--checkpoint", default=20, type=int, help="checkpoint for validation"
@@ -224,24 +229,28 @@ if __name__ == "__main__":
         type=int,
         help="number of data sample in each batch",
     )
-    parser.add_argument("--emb_dir")
+    parser.add_argument(
+        "--emb_dir",
+        default="data",
+        type=str,
+        help="Used to generate embeddings path if --pretrained_embeddings is not set",
+    )
     parser.add_argument(
         "--get_bert_encoder_embeddings",
         default=False,
-        help="indicate if need to get node vectors from BERT encoder output",
+        help="indicate if need to get node vectors from BERT encoder output, save code "
+             "commented out in src/pretraining.py",
     )
     # BERT Layer options
     parser.add_argument(
-        "--n_layers", default=6, type=int, help="number of encoder layers in bert"
+        "--n_layers", default=4, type=int, help="number of encoder layers in bert"
     )
     parser.add_argument(
         "--d_model", default=200, type=int, help="embedding size in bert"
     )
     parser.add_argument("--d_k", default=64, type=int, help="dimension of K(=Q), V")
     parser.add_argument("--d_v", default=64, type=int, help="dimension of K(=Q), V")
-    parser.add_argument(
-        "--n_heads", default=12, type=int, help="number of head in bert"
-    )
+    parser.add_argument("--n_heads", default=4, type=int, help="number of head in bert")
     parser.add_argument(
         "--d_ff",
         default=200 * 4,
@@ -251,7 +260,7 @@ if __name__ == "__main__":
     # GCN Layer options
     parser.add_argument(
         "--is_pre_trained",
-        action='store_true',
+        action="store_true",
         help="if there is pretrained node embeddings",
     )
     parser.add_argument(
@@ -269,10 +278,10 @@ if __name__ == "__main__":
     )
 
     # Finetuning options
-    parser.add_argument("--ft_lr", default=0.00005, type=float, help="learning rate")
+    parser.add_argument("--ft_lr", default=0.001, type=float, help="learning rate")
     parser.add_argument(
         "--ft_batch_size",
-        default=100,
+        default=128,
         type=int,
         help="number of data sample in each batch",
     )
