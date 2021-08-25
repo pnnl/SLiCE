@@ -194,7 +194,7 @@ if __name__ == "__main__":
     # Walks options
     parser.add_argument(
         "--beam_width",
-        default=4,
+        default=2,
         type=int,
         help="beam width used for generating random walks",
     )
