@@ -6,7 +6,7 @@
 ### Dataset details:
 - We use four public benchmark datasets covering multiple applications: e-commerce (Amazon), academic graph
 (DBLP), knowledge graphs (Freebase) and social networks (Twitter). Amazon and Twitter data came from https://github.com/THUDM/GATNE. Freebase data came from https://github.com/malllabiisc/CompGCN. DBLP data came from https://github.com/Jhy1993/HAN.
-- We also introduce
+- We introduce
 a new knowledge graph from the publicly available real-world Medical Information Mart for Intensive Care III (MIMIC III) dataset
 in healthcare domain. https://mimic.physionet.org/
 - We also introduce a new knowledge graph from the publicly available Intrusion detection evalution dataset (ISCXIDS2012) https://www.unb.ca/cic/datasets/ids.html
@@ -16,7 +16,6 @@ in healthcare domain. https://mimic.physionet.org/
 - The specific Pytorch Geometric wheels we use are included in the repo for convenience in the 'wheels' directory
 ```shell
 conda create -n slice python=3.6
-conda env update -n slice -f environment.yml
 conda activate slice
 pip install -r requirements.txt
 ```
