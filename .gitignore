@@ -6,7 +6,6 @@ __pycache__/
 
 **/.DS_Store
 *batch*.txt
-output/
 *.out
 
 *_walks*
