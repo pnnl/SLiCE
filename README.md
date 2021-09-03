@@ -24,21 +24,21 @@ pip install -r requirements.txt
 ### Training:
 ```shell
 python main.py \
-    --data_name $dataset \
-    --data_path $data_path \
-    --outdir $outdir \
-    --pretrained_embeddings $pretrained_embeddings \
-    --n_epochs $n_pretrain_epochs \
-    --n_layers $n_layers \
-    --n_heads $n_heads \
-    --gcn_option $gcn_option \
-    --node_edge_composition_func $node_edge_composition_func \
-    --ft_input_option $ft_input_option \
-    --path_option $path_option \
-    --ft_n_epochs $n_ft_epochs \
-    --num_walks_per_node $n_walks_per_node \
-    --max_length $max_length \
-    --walk_type $walk_type \
+    --data_name 'amazon_s' \
+    --data_path 'data' \
+    --outdir 'output/amazon_s' \
+    --pretrained_embeddings 'data/amazon_s/amazon_s.emd' \
+    --n_epochs 10 \
+    --n_layers 4 \
+    --n_heads 4 \
+    --gcn_option 'no_gcn' \
+    --node_edge_composition_func 'mult' \
+    --ft_input_option 'last4_cat' \
+    --path_option 'shortest' \
+    --ft_n_epochs 10 \
+    --num_walks_per_node 1 \
+    --max_length 6 \
+    --walk_type 'dfs' \
     --is_pre_trained
 ```
 
