@@ -13,7 +13,6 @@ from src.finetuning import (
     setup_finetuning_input,
 )
 from src.pretraining import run_pretraining, setup_pretraining_input
-from src.node2vec.src.node2vec import Graph
 from src.processing.context_generator import ContextGenerator
 from src.processing.generic_attributed_graph import GenericGraph
 from src.utils.data_utils import load_pretrained_node2vec
@@ -83,28 +82,6 @@ def main(args):
     if args.pretrained_method == "compgcn":
         pretrained_node_embedding = load_pickle(args.pretrained_embeddings)
     elif args.pretrained_method == "node2vec":
-        if not os.path.exists(args.pretrained_embeddings):
-            print("Run Node2vec to obtain pre-trained node embeddings ...")
-            nx_G = attr_graph.G
-            for edge in nx_G.edges():
-                nx_G[edge[0]][edge[1]]["weight"] = 1
-            nx_G = nx_G.to_undirected()
-
-            G = Graph(nx_G, False, 1, 1)
-            G.preprocess_transition_probs()
-            walks = G.simulate_walks(10, 80)
-            walks = [list(map(str, walk)) for walk in walks]
-            model = Word2Vec(
-                walks,
-                size=args.base_embedding_dim,
-                window=10,
-                min_count=0,
-                sg=1,
-                workers=8,
-                iter=1,
-            )
-            model.wv.save_word2vec_format(args.pretrained_embeddings)
-
         pretrained_node_embedding = load_pretrained_node2vec(
             args.pretrained_embeddings, ent2id, args.base_embedding_dim
         )
