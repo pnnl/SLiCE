@@ -51,8 +51,8 @@ def transform_relationship_ids(edges, split):
             
 
 def main():
-    #data_path = 'data/twitter'
-    data_path = 'data/cyber/processed/cyber_17'
+    data_path = 'data/dblp'
+    #data_path = 'data/cyber/processed/cyber_17'
     train_path = f'{data_path}/train.txt'
     valid_path = f'{data_path}/valid.txt'
     test_path = f'{data_path}/test.txt'
