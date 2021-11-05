@@ -11,7 +11,7 @@ Dataset details:
 a new knowledge graph from the publicly available real-world Medical Information Mart for Intensive Care III (MIMIC III) dataset
 in healthcare domain. https://mimic.physionet.org/
 - We also introduce a new knowledge graph from the publicly available Intrusion detection evalution dataset (ISCXIDS2012) https://www.unb.ca/cic/datasets/ids.html
-- Note: Relationship IDs have been converted to 1-based indexing if they were previously 0-based
+- Note: Relationship IDs were converted to 1-based indexing if they were previously 0-based
 
 Install instructions:
 ------

@@ -1,1 +1,0 @@
-To get the processed files, we ran src/processing/process_unb_cyber_network.py on the raw files from the main repo dir.
